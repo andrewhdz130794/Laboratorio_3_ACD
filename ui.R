@@ -9,8 +9,8 @@ dashboardPage(
             menuItem("Problema 1 | Solucion Cerrada", tabName = "problema_1"),
             menuItem("Problema 1 | GD ", tabName = "problema_1_2"),
             menuItem("Problema 1 | SGD ", tabName = "problema_1_3"),
-            
-            menuItem("Problema 3", tabName = "problema_3")
+            menuItem("Problema 1 | MBGD ", tabName = "problema_1_4"),
+            menuItem("Problema 1 | Comparaciones", tabName = "problema_1_5")
         ) 
     ),
     dashboardBody(
@@ -71,6 +71,25 @@ dashboardPage(
                     plotOutput("plotP133"),
                     tableOutput("salidap13")
             ),
+            tabItem("problema_1_4",
+                    h1("GD Variants | MBGD"),
+                    actionButton("p14Solver", "Resolver"),
+                    plotOutput("plotP14"),
+                    plotOutput("plotP141"),
+                    plotOutput("plotP142"),
+                    plotOutput("plotP143"),
+                    plotOutput("plotP144"),
+                    plotOutput("plotP145"),
+                    plotOutput("plotP146"),
+                    plotOutput("plotP147"),
+                    plotOutput("plotP148"),
+                    plotOutput("plotP149"),
+                    tableOutput("salidap14")
+            ),
+            tabItem("problema_1_5",
+                    h1("GD Variants | Comparaciones"),
+                    actionButton("p15Solver", "Resolver"),
+                    tableOutput("salidap15")),
             tabItem("problema_2",
                     h1("Rosenbrock's Function: f(x_1,x_2) = 100(x_2 x_1^2)^2 + (1 x_1)^2 "),
                     box(

@@ -173,13 +173,11 @@ shinyServer(function(input, output) {
     output$plotP13 <- renderPlot({
       results <- problem1_3_solver()
       
-      # Convertimos los datos a un formato largo para ggplot
       results_long <- results %>%
         pivot_longer(cols = starts_with("Iter_"), names_to = "Iter", values_to = "Iter_value") %>%
         pivot_longer(cols = starts_with("f_x_"), names_to = "f_x", values_to = "f_x_value") %>%
         pivot_longer(cols = starts_with("Learning_rate_"), names_to = "Learning_rate", values_to = "Learning_rate_value")
       
-      # Extraemos el índice de cada columna para emparejar los valores
       results_long <- results_long %>%
         mutate(Iter = as.numeric(gsub("Iter_", "", Iter)),
                f_x = as.numeric(gsub("f_x_", "", f_x)),
@@ -229,8 +227,146 @@ shinyServer(function(input, output) {
     })
     
     ############# Problema 1.4 ######################
+    problem1_4_solver <- eventReactive(input$p14Solver, {
+      
+      outs <- py$executeMBGD()
+      
+      return(outs)
+    })
+    
+    output$salidap14 <- renderTable({
+      problem1_4_solver()
+    })
+    
+    output$plotP14 <- renderPlot({
+      results <- problem1_4_solver()
+      
+      results_long <- results %>%
+        pivot_longer(cols = starts_with("Iter_"), names_to = "Iter", values_to = "Iter_value") %>%
+        pivot_longer(cols = starts_with("f_x_"), names_to = "f_x", values_to = "f_x_value") %>%
+        pivot_longer(cols = starts_with("Learning_rate_"), names_to = "Learning_rate", values_to = "Learning_rate_value")
+      
+      results_long <- results_long %>%
+        mutate(Iter = as.numeric(gsub("Iter_", "", Iter)),
+               f_x = as.numeric(gsub("f_x_", "", f_x)),
+               Learning_rate = as.numeric(gsub("Learning_rate_", "", Learning_rate))) %>%
+        filter(Iter == f_x & Iter == Learning_rate) %>%
+        select(-Iter, -f_x, -Learning_rate)
+      
+      ggplot(results_long, aes(x = Iter_value, y = f_x_value, color = as.factor(Learning_rate_value))) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
     
     
+    output$plotP141 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_1, y = f_x_1)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 25 LR = 0.0005",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    output$plotP142 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_2, y = f_x_2)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 25 LR = 0.005",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    output$plotP143 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_3, y = f_x_3)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 25 LR = 0.01",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    
+    output$plotP144 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_4, y = f_x_4)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 50 LR = 0.0005",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    output$plotP145 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_5, y = f_x_5)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 50 LR = 0.005",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    output$plotP146 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_6, y = f_x_6)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 50 LR = 0.01",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    output$plotP147 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_7, y = f_x_7)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 100 LR = 0.0005",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    output$plotP148 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_8, y = f_x_8)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 100 LR = 0.005",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    
+    output$plotP149 <- renderPlot({
+      results <- problem1_4_solver()
+      ggplot(results, aes(x = Iter_9, y = f_x_9)) +
+        geom_line() +
+        geom_point() +
+        labs(title = "Valor de la función objetivo vs Iteraciones Batch = 100 LR = 0.01",
+             x = "Iteraciones", y = "f(x)",
+             color = "Learning Rate") +
+        theme_minimal()
+    })
+    
+    ############# Problema 1.5 ######################
+    problem1_5_solver <- eventReactive(input$p15Solver, {
+      
+      outs <- py$gen_comparation()
+      
+      return(outs)
+    })
+    
+    output$salidap15 <- renderTable({
+      problem1_5_solver()
+    })
     
     
     output$plotGradNorm <- renderPlot({

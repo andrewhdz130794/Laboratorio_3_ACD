@@ -14,6 +14,8 @@ x_true = np.random.normal(0, 1, size=(d, 1))
 # Vector b con ruido añadido
 b = A.dot(x_true) + np.random.normal(0, 0.5, size=(n, 1))
 
+general_results = []
+
 # Solución cerrada
 def closed_form_solution():
     # Generación del dataset
@@ -30,6 +32,18 @@ def closed_form_solution():
     b = A.dot(x_true) + np.random.normal(0, 0.5, size=(n, 1))
     x_solution =  np.linalg.inv(A.T.dot(A)).dot(A.T).dot(b)
     TableOut = pd.DataFrame({'xn' : x_solution.flatten()})
+
+
+    f_closed_form = np.sum((A.dot(x_solution) - b) ** 2)
+    error_closed_form = np.linalg.norm(x_true - x_solution)
+    general_results.append({
+    'Method': 'Solucion Cerrada',
+    'f(x)': f_closed_form,
+    'Iterations': 0,
+    'Error in x': error_closed_form,
+    'Learning Rate':  np.nan,
+    'Batch Size': np.nan
+    })
     return TableOut
 
 # x_closed_form = closed_form_solution(A, b)
@@ -64,9 +78,21 @@ def executeGd():
         iter_data = pd.DataFrame({
             f'Iter_{idx}': np.arange(len(cost_history)),
             f'f_x_{idx}': np.array(cost_history).flatten(),
-            f'Learning_rate_{idx}': lr
+            f'Learning_rate_{idx}': str(lr)
         })
         results.append(iter_data)
+
+        f_gd = cost_history[-1]
+        error_gd = np.linalg.norm(x_true - x)
+        general_results.append({
+            'Method': 'GD',
+            'f(x)': f_gd,
+            'Iterations': len(cost_history),
+            'Error in x': error_gd,
+            'Learning Rate': str(lr),
+            'Batch Size': np.nan
+        })
+
 
     TableOut = pd.concat(results, axis=1)
     return TableOut
@@ -102,9 +128,21 @@ def executeSGd():
         iter_data = pd.DataFrame({
             f'Iter_{idx}': np.arange(len(cost_history_sgd)),
             f'f_x_{idx}': np.array(cost_history_sgd).flatten(),
-            f'Learning_rate_{idx}': lr
+            f'Learning_rate_{idx}': str(lr)
         })
         sgd_results.append(iter_data)
+
+        f_sgd = cost_history_sgd[-1]
+        error_sgd = np.linalg.norm(x_true - x_sgd)
+        general_results.append({
+            'Method': 'SGD',
+            'f(x)': f_sgd,
+            'Iterations': len(cost_history_sgd),
+            'Error in x': error_sgd,
+            'Learning Rate': str(lr),
+            'Batch Size': np.nan
+        })
+
     TableOut = pd.concat(sgd_results, axis=1)
     return TableOut
 
@@ -132,15 +170,45 @@ def mini_batch_gradient_descent(A, b, learning_rate, batch_size, max_iter=1000):
 
     return x, cost_history
 
-# # Ejecutamos el MBGD con diferentes tamaños de batch y tasas de aprendizaje
-# batch_sizes = [25, 50, 100]
-# learning_rates_mbgd = [0.0005, 0.005, 0.01]
-# mbgd_results = {}
+def executeMBGD():
+    
+    # Ejecutamos el MBGD con diferentes tamaños de batch y tasas de aprendizaje
+    batch_sizes = [25, 50, 100]
+    learning_rates_mbgd = [0.0005, 0.005, 0.01]
+    mbgd_results = []
+    iters_cnt = 1
 
-# for batch_size in batch_sizes:
-#     for lr in learning_rates_mbgd:
-#         x_mbgd, cost_history_mbgd = mini_batch_gradient_descent(A, b, learning_rate=lr, batch_size=batch_size)
-#         mbgd_results[(batch_size, lr)] = cost_history_mbgd
+    for batch_size in batch_sizes:
+        for lr in learning_rates_mbgd:
+            x_mbgd, cost_history_mbgd = mini_batch_gradient_descent(A, b, learning_rate=lr, batch_size=batch_size)
+            print(iters_cnt)
+            iter_data = pd.DataFrame({
+                f'Iter_{iters_cnt}': np.arange(len(cost_history_mbgd)),
+                f'f_x_{iters_cnt}': np.array(cost_history_mbgd).flatten(),
+                f'Learning_rate_{iters_cnt}': str(lr),
+                f'Batch{iters_cnt}': batch_size
+            })
+            mbgd_results.append(iter_data)
+
+            f_sgd = cost_history_mbgd[-1]
+            error_sgd = np.linalg.norm(x_true - x_mbgd)
+            general_results.append({
+                'Method': 'MBGD',
+                'f(x)': f_sgd,
+                'Iterations': len(cost_history_mbgd),
+                'Error in x': error_sgd,
+                'Learning Rate':  str(lr),
+                'Batch Size': batch_size
+            })
+            iters_cnt = iters_cnt + 1
+    TableOut = pd.concat(mbgd_results, axis=1)
+    return TableOut
+
+
+def gen_comparation():
+    comparison_df = pd.DataFrame(general_results)
+    comparison_df = comparison_df.sort_values(by=['f(x)', 'Iterations', 'Error in x'], ascending=[True, True, True])
+    return comparison_df
 
 
 def rosenbrock(x1, x2):
